@@ -111,7 +111,7 @@ We divide net revenue by room nights to understand the average revenue earned fo
 In this project, cancelled bookings are excluded from revenue and room-night calculations, so they do not inflate the ADR.
 
 ### 7. Which booking channel has the highest cancellation rate?
-     The exact channel depends on the results in your Gold tables.
+     The exact channel depends on the results in Gold tables.
 
 SELECT
     channel,
