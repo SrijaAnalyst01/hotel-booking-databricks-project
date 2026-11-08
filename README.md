@@ -135,7 +135,7 @@ FROM silver_clean
 GROUP BY channel
 ORDER BY cancellation_rate_pct DESC;
 
-This calculates the cancellation rate as cancelled bookings divided by total bookings for each channel. Use the query result to name the channel with the highest rate.
+This calculates the cancellation rate as cancelled bookings divided by total bookings for each channel. Using the query result to name the channel with the highest rate.
 
 ### 8. Which dashboard tool did you choose, and why?
 
