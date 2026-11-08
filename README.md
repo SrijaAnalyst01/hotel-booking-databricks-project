@@ -63,20 +63,25 @@ Duplicate excess rows are counted separately from clean and rejected records for
 
 ## Business Questions
 ### 1. Why do we keep the raw data in Bronze instead of cleaning the file directly?
+
      We keep the original data in the Bronze layer so that we preserve the source data for auditing, troubleshooting, and reprocessing. If we clean the original file directly, we may lose information or make it difficult to trace errors.
+     
   - Bronze: Raw ingested data.
   - Silver: Cleaned and validated data.
   - Gold: Business-ready tables for analysis and dashboards.
     
 ### 2. Why is a cancelled booking kept, but a booking with check-out before check-in rejected?
+
      A cancelled booking is still a valid business record. Keeping it allows us to analyze cancellation rates and booking behavior.
 However, a booking with check-out before check-in has an invalid date sequence. It is rejected because its stay duration cannot be validly calculated.
 
 ### 3. Why can booking_id find duplicates but guest_id cannot?
+
      booking_id identifies an individual booking, so duplicate booking IDs can indicate duplicate records.
 guest_id identifies a guest, not an individual booking. The same guest may make several legitimate bookings, so repeated guest IDs do not necessarily mean duplicate records.
 
 ### 4. How does DATEDIFF fill a blank nights value, and what happens if you swap its arguments?
+
      In Databricks SQL, DATEDIFF(endDate, startDate) calculates the number of days between two dates.
 
 For example:
@@ -90,23 +95,24 @@ DATEDIFF(check_in, check_out)
 The result is -3, which is incorrect for the booking's stay duration. We use the difference to fill a blank nights value when both dates are valid.
 
 ### 5. Why do we leave a blank rating as NULL instead of replacing it with 0?
+
      NULL means the rating is missing or was not provided. A rating of 0 is an actual numeric value and could be interpreted as a real rating.
 Keeping missing ratings as NULL avoids misleading averages and preserves the difference between missing data and a genuine value.
      
 ### 6. What is the average daily rate (ADR), and why is it calculated as net revenue ÷ room nights?
+
      ADR measures the average revenue earned per occupied room night.
+     
 \[
 \text{ADR}=\frac{\text{Net Revenue}}{\text{Room Nights}}
 \]
 
 We divide net revenue by room nights to understand the average revenue earned for each room night, rather than simply the average value of a booking.
-
 In this project, cancelled bookings are excluded from revenue and room-night calculations, so they do not inflate the ADR.
 
 ### 7. Which booking channel has the highest cancellation rate?
-     The exact channel depends on the results in your Gold tables. Don't guess the channel name.
+     The exact channel depends on the results in your Gold tables.
 
-Use this Databricks SQL query to verify it, adjusting the table and column names to match your schema:
 SELECT
     channel,
     COUNT(*) AS total_bookings,
@@ -132,6 +138,7 @@ ORDER BY cancellation_rate_pct DESC;
 This calculates the cancellation rate as cancelled bookings divided by total bookings for each channel. Use the query result to name the channel with the highest rate.
 
 ### 8. Which dashboard tool did you choose, and why?
+
   I chose Databricks AI/BI Dashboards because the project data is already stored and processed in Databricks. The dashboards can query the Gold tables directly, allowing me to present business insights without exporting the data to another tool.
 
 I created three dashboard pages:
@@ -139,4 +146,14 @@ I created three dashboard pages:
 - Hotels, Rooms & Channels: Comparisons across hotels, room types, and booking channels.
 - Data Quality: Data-quality metrics and reconciliation results.
 This keeps the data processing, SQL analysis, and dashboard reporting within the same platform.
+
+### Overview Dashboard
+<img width="1144" height="544" alt="image" src="https://github.com/user-attachments/assets/545164c7-6355-418a-8d9c-22d6e68f36cc" />
+
+### Hotels, Rooms & Channels Dashboard
+<img width="1140" height="548" alt="image" src="https://github.com/user-attachments/assets/bde65765-4097-44dc-add2-f0898a654d5a" />
+
+### Data Quality
+<img width="1145" height="549" alt="image" src="https://github.com/user-attachments/assets/2254cbe6-c807-4819-90c1-23130e7207b3" />
+
 
